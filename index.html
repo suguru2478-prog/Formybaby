@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For My Favourite Hooman 🎀</title>
+    
+    <!-- Elegant Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Base Reset & Mobile Optimization - NO SCROLLING ALLOWED */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            width: 100vw;
+            /* BULLETPROOF MOBILE SIZING: Uses dynamic viewport to prevent cutoff */
+            height: 100vh; 
+            height: 100dvh; 
+            overflow: hidden; 
+            font-family: 'Poppins', sans-serif;
+            background-color: #000;
+        }
+
+        /* Fixed Background */
+        .bg-container {
+            position: fixed;
+            top: -10%; left: -10%;
+            width: 120vw; height: 120vh;
+            background-image: url('https://ik.imagekit.io/22h7wv5o2/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 1; 
+            filter: brightness(0.3); 
+            animation: smoothFloat 40s ease-in-out infinite alternate;
+        }
+
+        @keyframes smoothFloat {
+            0% { transform: scale(1) translate(0%, 0%); }
+            100% { transform: scale(1.15) translate(-4%, -4%); }
+        }
+
+        .glass-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; 
+            height: 100vh; height: 100dvh;
+            background: rgba(15, 0, 5, 0.4); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2; 
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border-radius: 24px;
+            padding: 30px 20px;
+            width: 90%;
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+            color: #fff;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); margin-bottom: 15px; }
+
+        .btn {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            color: #555; border: none; padding: 12px 25px; border-radius: 30px;
+            font-size: 16px; font-weight: 500; font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s; margin-top: 15px; z-index: 20;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-small { font-size: 12px; padding: 8px 15px; background: transparent; border: 1px solid #fff; color: #fff; box-shadow: none; margin-top: 10px; }
+
+        /* FIXED: Bottom Buttons will never be cut off again */
+        .next-btn-container {
+            position: absolute; 
+            bottom: 8%; /* Safely 8% above the bottom edge of the dynamic screen */
+            left: 0; 
+            width: 100%; 
+            text-align: center;
+            opacity: 0; pointer-events: none; transition: opacity 1s; z-index: 50;
+        }
+        .next-btn-container.show { opacity: 1; pointer-events: auto; }
+
+        input[type="text"] {
+            width: 100%; padding: 15px; border: none; border-radius: 15px;
+            background: rgba(255, 255, 255, 0.2); color: #fff; font-size: 16px;
+            text-align: center; margin-bottom: 10px; outline: none; font-family: 'Poppins', sans-serif;
+        }
+        input::placeholder { color: rgba(255,255,255,0.6); }
+
+        .page {
+            display: none; position: absolute; top: 0; left: 0; width: 100vw; 
+            height: 100vh; height: 100dvh;
+            flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.6s ease-in-out; z-index: 10; 
+        }
+        .active-page { display: flex; opacity: 1; }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
+            background: rgba(0,0,0,0.6); z-index: 100; justify-content: center;
+            align-items: center; opacity: 0; transition: opacity 0.3s;
+        }
+        .modal.show { display: flex; opacity: 1; }
+        
+        #type-text { font-size: 15px; line-height: 1.6; min-height: 150px; text-align: left; }
+
+        .shake { animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+        /* FIXED: Title stays safe from notches */
+        .collage-title {
+            position: absolute; top: 8%; width: 100%; color: #fff; text-align: center;
+            font-family: 'Playfair Display', serif; font-size: 24px; text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+            opacity: 0; transition: opacity 1s; z-index: 20;
+        }
+
+        .img-adjustable { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Collage 1 */
+        .collage-container { position: relative; width: 100%; height: 70%; display: flex; justify-content: center; align-items: center; }
+        .polaroid {
+            position: absolute;
+            background: #fff; padding: 8px 8px 25px 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border-radius: 4px; opacity: 0; transform: scale(0) rotate(0deg);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .polaroid-frame { width: 100%; height: 100%; overflow: hidden; background: #eee; }
+        .reveal-polaroid { opacity: 1 !important; transform: scale(1) var(--rot) !important; }
+
+        /* Collage 2 */
+        .bubble {
+            position: absolute; border-radius: 50%; overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 192, 203, 0.4), inset 0 0 10px rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 255, 255, 0.8); opacity: 0; transform: scale(0);
+            transition: all 1s ease; animation: floatBubble var(--float-speed) ease-in-out infinite alternate;
+        }
+        @keyframes floatBubble { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(-15px) scale(1); } }
+        .reveal-bubble { opacity: 1 !important; transform: scale(1) !important; }
+
+        /* Collage 3 */
+        .scrapbook-item {
+            position: absolute; background: #fff; padding: 5px; box-shadow: 2px 5px 15px rgba(0,0,0,0.5);
+            opacity: 0; transform: scale(0) translateY(50px); transition: all 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .scrapbook-frame { width: 100%; height: 100%; overflow: hidden; position: relative; }
+        .scrapbook-item::before {
+            content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%) rotate(-5deg);
+            width: 35px; height: 12px; background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(200,200,200,0.3); box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 5;
+        }
+        .reveal-scrapbook { opacity: 1 !important; transform: scale(1) var(--rot) translateY(0) !important; }
+
+        .floating-icon { display: inline-block; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="bg-container"></div>
+    <div class="glass-overlay"></div>
+
+    <!-- PAGE 0: LOGIN -->
+    <div id="page-login" class="page active-page">
+        <div class="glass-card" id="login-card">
+            <h2>Welcome, My Love <span class="floating-icon">🎀</span></h2>
+            <p style="font-size: 13px; margin-bottom: 20px;">Please enter the secret password</p>
+            <input type="text" id="password-input" placeholder="Secret Password...">
+            <button class="btn" onclick="checkPassword()">Enter My Heart 💖</button>
+            <br>
+            <button class="btn-small" onclick="showHint()">I need a hint 🥺</button>
+        </div>
+    </div>
+
+    <!-- Hint Modal -->
+    <div id="hint-modal" class="modal">
+        <div class="glass-card">
+            <h3>Hint ✨</h3>
+            <p>Mixed name of the cutest hoomans.</p>
+            <button class="btn" onclick="closeHint()">Okay 🎀</button>
+        </div>
+    </div>
+
+    <!-- PAGE 1: MESSAGE -->
+    <div id="page-message" class="page">
+        <div class="glass-card" style="max-width: 90%;">
+            <h2>Just For You <span class="floating-icon">💖</span></h2>
+            <div id="type-text"></div>
+            <button id="msg-btn" class="btn" style="display: none;" onclick="goToPage('page-collage-1'); playCollage1();">See Our Memories 🎀</button>
+        </div>
+    </div>
+
+    <!-- PAGE 2: COLLAGE 1 -->
+    <div id="page-collage-1" class="page">
+        <h3 class="collage-title" id="title-1">Beautiful Chaos 🎀</h3>
+        <div class="collage-container" id="c1"></div>
+        <div class="next-btn-container" id="next-1">
+            <button class="btn" onclick="goToPage('page-collage-2'); playCollage2();">Next Chapter ✨</button>
+        </div>
+    </div>
+
+    <!-- PAGE 3: COLLAGE 2 -->
+    <div id="page-collage-2" class="page">
+        <h3 class="collage-title" id="title-2">Floating in My Heart 💖</h3>
+        <div class="collage-container" id="c2" style="width: 100%; height: 100%; position: absolute; top:0; left:0;"></div>
+        <div class="next-btn-container" id="next-2">
+            <button class="btn" onclick="goToPage('page-collage-3'); playCollage3();">Next Chapter 🎀</button>
+        </div>
+    </div>
+
+    <!-- PAGE 4: COLLAGE 3 -->
+    <div id="page-collage-3" class="page">
+        <h3 class="collage-title" id="title-3">Forever & Always ✨</h3>
+        <div class="collage-container" id="c3" style="width: 100%; height: 100%; position: absolute; top:0; left:0;"></div>
+        <div class="next-btn-container" id="next-3">
+            <button class="btn" onclick="rewatchMemories()">Rewatch Our Memory 🥺💖</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 🚀 IMAGE PRELOADER (FIXES GITHUB LAG)
+        // Automatically caches images in the background
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            for (let i = 1; i <= 20; i++) {
+                const img = new Image();
+                img.src = `${i}.jpg`;
+            }
+        });
+
+        // ==========================================
+        // 🎛️ MASTER CONTROL PANEL 🎛️
+        // Adjust the frame sizes for all collages here!
+        // ==========================================
+
+        // 🖼️ COLLAGE 1: POLAROIDS FRAME SIZE
+        const collage1Config = { 
+            width: '170px',   // Change width here
+            height: '190px'   // Change height here
+        };
+
+        // 🫧 COLLAGE 2: BUBBLES FRAME SIZES
+        // Change 'size' to make specific bubbles bigger or smaller
+        const collage2Config = [
+            { top: '15%', left: '10%', size: '100px', speed: '3s' },  // Img 8
+            { top: '25%', left: '60%', size: '120px', speed: '4s' },  // Img 9
+            { top: '40%', left: '8%',  size: '90px',  speed: '2.5s' }, // Img 10
+            { top: '50%', left: '65%', size: '110px', speed: '3.5s' }, // Img 11
+            { top: '65%', left: '15%', size: '130px', speed: '4.5s' }, // Img 12
+            { top: '70%', left: '60%', size: '100px', speed: '3s' },  // Img 13
+            { top: '35%', left: '30%', size: '150px', speed: '5s' }   // Img 14 (Center)
+        ];
+
+        // 📓 COLLAGE 3: SCRAPBOOK FRAME SIZES
+        // Change 'w' (width) and 'h' (height) for each scrapbook photo
+        const collage3Config = [
+            { top: '18%', left: '5%',  w: '120px', h: '120px', rot: '-12deg' }, // Img 15
+            { top: '12%', left: '50%', w: '140px', h: '100px', rot: '8deg' },   // Img 16
+            { top: '38%', left: '10%', w: '110px', h: '140px', rot: '5deg' },   // Img 17
+            { top: '42%', left: '55%', w: '120px', h: '120px', rot: '-10deg' }, // Img 18
+            { top: '60%', left: '8%',  w: '150px', h: '110px', rot: '-5deg' },  // Img 19
+            { top: '65%', left: '50%', w: '130px', h: '150px', rot: '12deg' }   // Img 20
+        ];
+
+        // 🔍 INSIDE-FRAME IMAGE ADJUSTMENTS
+        // Use this to pan or zoom the image INSIDE the frame without breaking the layout
+        const imageControls = {
+            1: { zoom: 1.0, x: '0px', y: '0px' }, 2: { zoom: 1.0, x: '0px', y: '0px' },
+            3: { zoom: 1.0, x: '0px', y: '0px' }, 4: { zoom: 1.0, x: '0px', y: '0px' },
+            5: { zoom: 1.0, x: '0px', y: '0px' }, 6: { zoom: 1.0, x: '0px', y: '0px' },
+            7: { zoom: 1.0, x: '0px', y: '0px' }, 8: { zoom: 1.0, x: '0px', y: '0px' },
+            9: { zoom: 1.0, x: '0px', y: '0px' }, 10: { zoom: 1.0, x: '0px', y: '0px' },
+            11: { zoom: 1.0, x: '0px', y: '0px' }, 12: { zoom: 1.0, x: '0px', y: '0px' },
+            13: { zoom: 1.0, x: '0px', y: '0px' }, 14: { zoom: 1.0, x: '0px', y: '0px' },
+            15: { zoom: 1.0, x: '0px', y: '0px' }, 16: { zoom: 1.0, x: '0px', y: '0px' },
+            17: { zoom: 1.0, x: '0px', y: '0px' }, 18: { zoom: 1.0, x: '0px', y: '0px' },
+            19: { zoom: 1.0, x: '0px', y: '0px' }, 20: { zoom: 1.0, x: '0px', y: '0px' }
+        };
+
+        // ==========================================
+        // ⌨️ TYPEWRITER MESSAGE
+        // ==========================================
+        const customMessage = "My Love,\n\nEvery second with you feels like a living dream. You are the most beautiful and cutest part of my life, and I wanted to make something special just for you. Take my hand, and let's walk through our memories. I love you. Always and forever. 💕";
+        
+        let audioPlayed = false;
+        let typeWriterTimeout;
+        let activeTimeouts = [];
+
+        // Triggers audio on first click anywhere
+        document.body.addEventListener('click', () => {
+            if (!audioPlayed) {
+                document.getElementById('bg-music').play().catch(e => console.log("Audio Wait"));
+                audioPlayed = true;
+            }
+        });
+
+        // 🚀 FULLSCREEN API FUNCTION
+        function requestFullScreen() {
+            let el = document.documentElement;
+            if (el.requestFullscreen) { el.requestFullscreen(); } 
+            else if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); } // Safari
+            else if (el.msRequestFullscreen) { el.msRequestFullscreen(); } // IE11
+        }
+
+        function goToPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            setTimeout(() => { document.getElementById(pageId).classList.add('active-page'); }, 50);
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('password-input').value.trim().toLowerCase();
+            const card = document.getElementById('login-card');
+            if (input === 'diyant') {
+                // 🚀 INSTANTLY GO FULLSCREEN ON CORRECT PASSWORD CLICK!
+                requestFullScreen(); 
+                
+                goToPage('page-message');
+                setTimeout(startTypewriter, 600);
+            } else {
+                card.classList.add('shake');
+                setTimeout(() => card.classList.remove('shake'), 500);
+            }
+        }
+
+        function showHint() { document.getElementById('hint-modal').classList.add('show'); }
+        function closeHint() { document.getElementById('hint-modal').classList.remove('show'); }
+
+        function startTypewriter() {
+            document.getElementById('type-text').innerHTML = "";
+            document.getElementById('msg-btn').style.display = "none";
+            let i = 0;
+            function type() {
+                if (i < customMessage.length) {
+                    let char = customMessage.charAt(i);
+                    document.getElementById('type-text').innerHTML += char === '\n' ? '<br>' : char;
+                    i++;
+                    typeWriterTimeout = setTimeout(type, 50);
+                } else {
+                    document.getElementById('msg-btn').style.display = "inline-block";
+                }
+            }
+            type();
+        }
+
+        function getImgHtml(i) {
+            let config = imageControls[i] || { zoom: 1.0, x: '0px', y: '0px' };
+            let style = `transform: scale(${config.zoom}) translate(${config.x}, ${config.y});`;
+            return `<img src="${i}.jpg" class="img-adjustable" style="${style}">`;
+        }
+
+        function clearTimeouts() {
+            activeTimeouts.forEach(t => clearTimeout(t));
+            activeTimeouts = [];
+        }
+
+        function playCollage1() {
+            clearTimeouts();
+            const c1 = document.getElementById('c1');
+            c1.innerHTML = '';
+            document.getElementById('title-1').style.opacity = 0;
+            document.getElementById('next-1').classList.remove('show');
+
+            let delay = 500;
+            activeTimeouts.push(setTimeout(() => document.getElementById('title-1').style.opacity = 1, delay));
+
+            for (let i = 1; i <= 7; i++) {
+                activeTimeouts.push(setTimeout(() => {
+                    let div = document.createElement('div');
+                    div.className = 'polaroid';
+                    
+                    // Apply frame size from Control Panel
+                    div.style.width = collage1Config.width;
+                    div.style.height = collage1Config.height;
+
+                    let rotation = (Math.random() * 40 - 20) + "deg"; 
+                    div.style.setProperty('--rot', `rotate(${rotation})`);
+                    div.innerHTML = `<div class="polaroid-frame">${getImgHtml(i)}</div>`;
+                    c1.appendChild(div);
+                    setTimeout(() => div.classList.add('reveal-polaroid'), 50);
+
+                    if (i === 7) {
+                        activeTimeouts.push(setTimeout(() => document.getElementById('next-1').classList.add('show'), 1000));
+                    }
+                }, delay));
+                delay += 1000;
+            }
+        }
+
+        function playCollage2() {
+            clearTimeouts();
+            const c2 = document.getElementById('c2');
+            c2.innerHTML = '';
+            document.getElementById('title-2').style.opacity = 0;
+            document.getElementById('next-2').classList.remove('show');
+
+            let delay = 500;
+            activeTimeouts.push(setTimeout(() => document.getElementById('title-2').style.opacity = 1, delay));
+
+            for (let i = 8; i <= 14; i++) {
+                activeTimeouts.push(setTimeout(() => {
+                    let pos = collage2Config[i - 8];
+                    let div = document.createElement('div');
+                    div.className = 'bubble';
+                    div.style.top = pos.top;
+                    div.style.left = pos.left;
+                    div.style.width = pos.size;
+                    div.style.height = pos.size;
+                    div.style.setProperty('--float-speed', pos.speed);
+                    
+                    div.innerHTML = getImgHtml(i);
+                    c2.appendChild(div);
+                    setTimeout(() => div.classList.add('reveal-bubble'), 50);
+
+                    if (i === 14) {
+                        activeTimeouts.push(setTimeout(() => document.getElementById('next-2').classList.add('show'), 1200));
+                    }
+                }, delay));
+                delay += 1000;
+            }
+        }
+
+        function playCollage3() {
+            clearTimeouts();
+            const c3 = document.getElementById('c3');
+            c3.innerHTML = '';
+            document.getElementById('title-3').style.opacity = 0;
+            document.getElementById('next-3').classList.remove('show');
+
+            let delay = 500;
+            activeTimeouts.push(setTimeout(() => document.getElementById('title-3').style.opacity = 1, delay));
+
+            for (let i = 15; i <= 20; i++) {
+                activeTimeouts.push(setTimeout(() => {
+                    let pos = collage3Config[i - 15];
+                    let div = document.createElement('div');
+                    div.className = 'scrapbook-item';
+                    div.style.top = pos.top;
+                    div.style.left = pos.left;
+                    div.style.width = pos.w;
+                    div.style.height = pos.h;
+                    div.style.setProperty('--rot', `rotate(${pos.rot})`);
+                    
+                    div.innerHTML = `<div class="scrapbook-frame">${getImgHtml(i)}</div>`;
+                    c3.appendChild(div);
+                    setTimeout(() => div.classList.add('reveal-scrapbook'), 50);
+
+                    if (i === 20) {
+                        activeTimeouts.push(setTimeout(() => document.getElementById('next-3').classList.add('show'), 1200));
+                    }
+                }, delay));
+                delay += 1000;
+            }
+        }
+
+        function rewatchMemories() {
+            goToPage('page-collage-1');
+            playCollage1();
+        }
+    </script>
+</body>
+</html>
